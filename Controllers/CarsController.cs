@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -10,6 +11,7 @@ using CarLeasingSystem.Models;
 
 namespace CarLeasingSystem.Controllers
 {
+    [Authorize]
     public class CarsController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -43,17 +45,19 @@ namespace CarLeasingSystem.Controllers
             return View(car);
         }
 
-        // GET: Cars/Create
+        // GET: Cars/Create - Admin Only
+        [Authorize(Roles = "Admin")]
         public IActionResult Create()
         {
             return View();
         }
 
-        // POST: Cars/Create
+        // POST: Cars/Create - Admin Only
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create([Bind("Id,Make,Model,LicensePlate,DailyRate,IsAvailable")] Car car)
         {
             if (ModelState.IsValid)
@@ -65,7 +69,8 @@ namespace CarLeasingSystem.Controllers
             return View(car);
         }
 
-        // GET: Cars/Edit/5
+        // GET: Cars/Edit/5 - Admin Only
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -116,7 +121,8 @@ namespace CarLeasingSystem.Controllers
             return View(car);
         }
 
-        // GET: Cars/Delete/5
+        // GET: Cars/Delete/5 - Admin Only
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -134,9 +140,10 @@ namespace CarLeasingSystem.Controllers
             return View(car);
         }
 
-        // POST: Cars/Delete/5
+        // POST: Cars/Delete/5 - Admin Only
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var car = await _context.Cars.FindAsync(id);

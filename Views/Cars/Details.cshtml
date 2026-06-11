@@ -42,7 +42,14 @@
         </dd>
     </dl>
 </div>
+
 <div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
+    @* Only admins see the Edit button *@
+    @if (User.IsInRole("Admin"))
+    {
+        <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> <span>|</span>
+    }
+    
+    @* Everyone sees the Back to List button *@
     <a asp-action="Index">Back to List</a>
 </div>

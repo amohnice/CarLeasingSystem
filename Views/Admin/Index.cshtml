@@ -1,0 +1,25 @@
+﻿@model IEnumerable<CarLeasingSystem.Models.Booking>
+
+<h2>Admin Dashboard: All Bookings</h2>
+
+<table class="table table-striped">
+    <thead>
+    <tr>
+        <th>Customer</th>
+        <th>Car</th>
+        <th>Start Date</th>
+        <th>End Date</th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>@item.CustomerName</td>
+            <td>@item.Car.Make @item.Car.Model</td>
+            <td>@item.StartDate.ToShortDateString()</td>
+            <td>@item.EndDate.ToShortDateString()</td>
+        </tr>
+    }
+    </tbody>
+</table>
