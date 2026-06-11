@@ -88,5 +88,24 @@ namespace CarLeasingSystem.Controllers
 
             return View(myBookings);
         }
+        
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var booking = await _context.Bookings.FindAsync(id);
+
+            // Security: Only allow the owner to cancel
+            if (booking == null || booking.CustomerName != User.Identity.Name)
+            {
+                return NotFound();
+            }
+
+            _context.Bookings.Remove(booking);
+            await _context.SaveChangesAsync();
+
+            TempData["Message"] = "Booking cancelled successfully.";
+            return RedirectToAction("MyBookings");
+        }
     }
 }

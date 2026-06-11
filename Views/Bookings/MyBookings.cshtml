@@ -23,6 +23,13 @@ else
                 <td>@item.Car.Make @item.Car.Model</td>
                 <td>@item.StartDate.ToShortDateString()</td>
                 <td>@item.EndDate.ToShortDateString()</td>
+                <td>
+                    <form asp-action="Delete" asp-route-id="@item.Id" method="post">
+                        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure?')">
+                            Cancel
+                        </button>
+                    </form>
+                </td>
             </tr>
         }
         </tbody>
