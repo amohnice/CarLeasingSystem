@@ -7,9 +7,8 @@ namespace CarLeasingSystem.Models
     public class Booking
     {
         public int Id { get; set; }
-
-        [Required]
-        public string CustomerName { get; set; }
+        
+        public string? CustomerName { get; set; }
 
         [Required]
         public DateTime StartDate { get; set; }

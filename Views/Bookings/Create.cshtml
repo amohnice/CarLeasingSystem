@@ -7,16 +7,12 @@
     <p><strong>From:</strong> @Model.StartDate.ToShortDateString() <strong>To:</strong> @Model.EndDate.ToShortDateString()</p>
 
     <form asp-action="Create" method="post">
-        @* Hidden fields to preserve data through the POST request *@
         <div asp-validation-summary="All" class="text-danger"></div>
-        <input type="hidden" asp-for="CarId" />
-        <input type="hidden" asp-for="StartDate" />
-        <input type="hidden" asp-for="EndDate" />
-
-        <div class="mb-3">
-            <label asp-for="CustomerName" class="form-label"></label>
-            <input asp-for="CustomerName" class="form-control" required />
-        </div>
+        
+        @* Hidden fields to preserve data through the POST request *@
+        <input type="hidden" asp-for="CarId"/>
+        <input type="hidden" asp-for="StartDate"/>
+        <input type="hidden" asp-for="EndDate"/>
 
         <button type="submit" class="btn btn-primary">Confirm Booking</button>
         <a asp-action="Search" class="btn btn-secondary">Cancel</a>

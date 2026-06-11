@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using CarLeasingSystem.Data;
 using CarLeasingSystem.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace CarLeasingSystem.Controllers
 {
+    [Authorize]
     public class BookingsController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -57,8 +59,12 @@ namespace CarLeasingSystem.Controllers
         // POST: Bookings/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("CarId,StartDate,EndDate,CustomerName")] Booking booking)
+        public async Task<IActionResult> Create([Bind("CarId,StartDate,EndDate")] Booking booking)
         {
+            ModelState.Remove("Car");
+
+            booking.CustomerName = User.Identity.Name;
+    
             if (ModelState.IsValid)
             {
                 _context.Add(booking);
@@ -68,9 +74,19 @@ namespace CarLeasingSystem.Controllers
                 return RedirectToAction("Index", "Home"); 
             }
 
-            // If validation fails, we still need to load the Car for the view to render correctly
-            booking.Car = _context.Cars.Find(booking.CarId);
+            booking.Car = await _context.Cars.FindAsync(booking.CarId);
             return View(booking);
+        }
+        
+        public async Task<IActionResult> MyBookings()
+        {
+            var userName = User.Identity.Name;
+            var myBookings = await _context.Bookings
+                .Include(b => b.Car)
+                .Where(b => b.CustomerName == userName)
+                .ToListAsync();
+
+            return View(myBookings);
         }
     }
 }
