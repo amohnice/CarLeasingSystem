@@ -1,0 +1,19 @@
+﻿@{ ViewData["Title"] = "Search Available Cars"; }
+
+<h2>Search for Available Cars</h2>
+
+<form asp-action="SearchResults" method="post">
+    <div class="row">
+        <div class="col-md-4">
+            <label>Start Date</label>
+            <input type="date" name="startDate" class="form-control" required />
+        </div>
+        <div class="col-md-4">
+            <label>End Date</label>
+            <input type="date" name="endDate" class="form-control" required />
+        </div>
+        <div class="col-md-4 d-flex align-items-end">
+            <button type="submit" class="btn btn-primary">Search Availability</button>
+        </div>
+    </div>
+</form>

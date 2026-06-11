@@ -1,0 +1,31 @@
+﻿@model IEnumerable<CarLeasingSystem.Models.Car>
+
+<h2>Available Cars</h2>
+
+@if (!Model.Any())
+{
+    <p>No cars available for the selected dates.</p>
+}
+else
+{
+    <table class="table">
+        <thead><tr><th>Make</th><th>Model</th><th>Rate</th><th>Action</th></tr></thead>
+        <tbody>
+        @foreach (var car in Model)
+        {
+            <tr>
+                <td>@car.Make</td>
+                <td>@car.Model</td>
+                <td>@car.DailyRate</td>
+                <td>
+                    <a asp-controller="Bookings" asp-action="Create" 
+                       asp-route-carId="@car.Id" 
+                       asp-route-start="@ViewBag.StartDate" 
+                       asp-route-end="@ViewBag.EndDate" 
+                       class="btn btn-success">Book Now</a>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
