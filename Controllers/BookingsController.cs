@@ -61,19 +61,36 @@ namespace CarLeasingSystem.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("CarId,StartDate,EndDate")] Booking booking)
         {
-            ModelState.Remove("Car");
+            // 1. Verify availability one last time (Prevents double-booking)
+            bool isAlreadyBooked = await _context.Bookings.AnyAsync(b => 
+                b.CarId == booking.CarId && 
+                b.StartDate < booking.EndDate && 
+                b.EndDate > booking.StartDate);
 
-            booking.CustomerName = User.Identity.Name;
-    
+            if (isAlreadyBooked)
+            {
+                ModelState.AddModelError("", "Sorry, this car was just booked by someone else for these dates.");
+            }
+
+            // 2. Perform additional logic (e.g., check if start date is in the past)
+            if (booking.StartDate < DateTime.Today)
+            {
+                ModelState.AddModelError("StartDate", "You cannot book a car in the past.");
+            }
+
+            // 3. Only proceed if the custom logic AND the model are valid
             if (ModelState.IsValid)
             {
+                booking.CustomerName = User.Identity.Name;
                 _context.Add(booking);
                 await _context.SaveChangesAsync();
         
                 TempData["Message"] = "Booking confirmed successfully!";
-                return RedirectToAction("Index", "Home"); 
+                return RedirectToAction("MyBookings"); 
             }
 
+            // 4. If we reach here, there was an error. 
+            // We must re-fetch the Car so the view doesn't crash.
             booking.Car = await _context.Cars.FindAsync(booking.CarId);
             return View(booking);
         }
