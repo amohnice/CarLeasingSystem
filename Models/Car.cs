@@ -18,5 +18,7 @@ namespace CarLeasingSystem.Models
         public decimal DailyRate { get; set; }
 
         public bool IsAvailable { get; set; } = true; // Default to true
+        
+        public string? ImageUrl { get; set; } // Stores the file name/path
     }
 }

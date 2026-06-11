@@ -15,10 +15,12 @@ namespace CarLeasingSystem.Controllers
     public class CarsController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly IWebHostEnvironment _webHostEnvironment;
 
-        public CarsController(ApplicationDbContext context)
+        public CarsController(ApplicationDbContext context, IWebHostEnvironment webHostEnvironment)
         {
             _context = context;
+            _webHostEnvironment = webHostEnvironment;
         }
 
         // GET: Cars
@@ -58,14 +60,41 @@ namespace CarLeasingSystem.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Create([Bind("Id,Make,Model,LicensePlate,DailyRate,IsAvailable")] Car car)
+        public async Task<IActionResult> Create([Bind("Id,Make,Model,LicensePlate,DailyRate,IsAvailable")] Car car, IFormFile imageFile)
         {
             if (ModelState.IsValid)
             {
+                if (imageFile != null && imageFile.Length > 0)
+                {
+                    string fileName = Guid.NewGuid().ToString() +
+                                      Path.GetExtension(imageFile.FileName);
+
+                    string uploadFolder = Path.Combine(
+                        _webHostEnvironment.WebRootPath,
+                        "images",
+                        "cars");
+
+                    if (!Directory.Exists(uploadFolder))
+                    {
+                        Directory.CreateDirectory(uploadFolder);
+                    }
+
+                    string filePath = Path.Combine(uploadFolder, fileName);
+
+                    using (var fileStream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await imageFile.CopyToAsync(fileStream);
+                    }
+
+                    car.ImageUrl = "/images/cars/" + fileName;
+                }
+
                 _context.Add(car);
                 await _context.SaveChangesAsync();
+
                 return RedirectToAction(nameof(Index));
             }
+
             return View(car);
         }
 

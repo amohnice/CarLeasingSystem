@@ -4,52 +4,55 @@
     ViewData["Title"] = "Fleet";
 }
 
-<h1>Our Fleet</h1>
-
-@* Only show 'Create New' to Admins *@
-@if (User.IsInRole("Admin"))
-{
-    <p>
-        <a asp-action="Create" class="btn btn-success">Create New Car</a>
-    </p>
-}
-
-<table class="table">
-    <thead>
-    <tr>
-        <th>@Html.DisplayNameFor(model => model.Make)</th>
-        <th>@Html.DisplayNameFor(model => model.Model)</th>
-        <th>@Html.DisplayNameFor(model => model.LicensePlate)</th>
-        <th>@Html.DisplayNameFor(model => model.DailyRate)</th>
-        <th>@Html.DisplayNameFor(model => model.IsAvailable)</th>
-        <th>Actions</th>
-    </tr>
-    </thead>
-    <tbody>
-    @foreach (var item in Model) {
-        <tr>
-            <td>@Html.DisplayFor(modelItem => item.Make)</td>
-            <td>@Html.DisplayFor(modelItem => item.Model)</td>
-            <td>@Html.DisplayFor(modelItem => item.LicensePlate)</td>
-            <td>@Html.DisplayFor(modelItem => item.DailyRate)</td>
-            <td>@Html.DisplayFor(modelItem => item.IsAvailable)</td>
-            <td>
-                @* Always visible *@
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> 
-                
-                @* Booking Link - Visible to all logged-in users *@
-                | <a asp-controller="Bookings" asp-action="Create" asp-route-carId="@item.Id" class="btn btn-primary btn-sm">Book Now</a>
-
-                @* Admin Only Actions *@
-                @if (User.IsInRole("Admin"))
-                {
-                    <text> | </text>
-                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> 
-                    <text> | </text>
-                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-                }
-            </td>
-        </tr>
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Our Fleet</h1>
+    @if (User.IsInRole("Admin"))
+    {
+        <a asp-action="Create" class="btn btn-success">Add New Car</a>
     }
-    </tbody>
-</table>
+</div>
+
+<div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+    @foreach (var item in Model)
+    {
+        <div class="col">
+            <div class="card h-100 shadow-sm border-0">
+                <img src="@(string.IsNullOrEmpty(item.ImageUrl) ? "/images/default-car.png" : item.ImageUrl)" 
+                     class="card-img-top" 
+                     alt="@item.Make @item.Model"
+                     style="height: 200px; object-fit: cover;">
+
+                <div class="card-header bg-transparent border-0 d-flex justify-content-end">
+                    <span class="badge @(item.IsAvailable ? "bg-success" : "bg-danger")">
+                        @(item.IsAvailable ? "Available" : "Unavailable")
+                    </span>
+                </div>
+
+                <div class="card-body">
+                    <h5 class="card-title">@item.Make @item.Model</h5>
+                    <p class="card-text text-muted mb-1">Plate: @item.LicensePlate</p>
+                    <h3 class="card-text text-primary">Kes @item.DailyRate<small class="text-muted fs-6">/day</small></h3>
+                </div>
+
+                <div class="card-footer bg-transparent border-0 pt-0 pb-3">
+                    <div class="d-grid gap-2">
+                        <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-outline-secondary">View Details</a>
+                        
+                        @if (item.IsAvailable)
+                        {
+                            <a asp-controller="Bookings" asp-action="Create" asp-route-carId="@item.Id" class="btn btn-primary">Book Now</a>
+                        }
+
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <div class="btn-group mt-2">
+                                <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-warning">Edit</a>
+                                <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-outline-danger">Delete</a>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
