@@ -39,7 +39,7 @@ namespace CarLeasingSystem.Controllers
             return View(availableCars);
         }
         // GET: Bookings/Create
-        public IActionResult Create(int carId, DateTime start, DateTime end)
+        public IActionResult Create(int carId, DateTime? start, DateTime? end)
         {
             var car = _context.Cars.Find(carId);
             if (car == null) return NotFound();
@@ -49,8 +49,8 @@ namespace CarLeasingSystem.Controllers
             { 
                 CarId = carId, 
                 Car = car, 
-                StartDate = start, 
-                EndDate = end 
+                StartDate = start ?? DateTime.Today, 
+                EndDate = end ?? DateTime.Today.AddDays(1) 
             };
     
             return View(booking);
