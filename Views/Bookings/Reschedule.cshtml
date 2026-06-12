@@ -1,0 +1,25 @@
+﻿@model CarLeasingSystem.Models.Booking
+
+<h2>Reschedule Booking</h2>
+
+<div class="card p-4">
+    <p><strong>Car:</strong> @Model.Car.Make @Model.Car.Model</p>
+
+    <form asp-action="Reschedule" method="post">
+        <div asp-validation-summary="All" class="text-danger"></div>
+        <input type="hidden" asp-for="Id" />
+
+        <div class="form-group mb-3">
+            <label asp-for="StartDate"></label>
+            <input asp-for="StartDate" class="form-control" type="date" />
+        </div>
+
+        <div class="form-group mb-3">
+            <label asp-for="EndDate"></label>
+            <input asp-for="EndDate" class="form-control" type="date" />
+        </div>
+
+        <button type="submit" class="btn btn-primary">Save Changes</button>
+        <a asp-action="MyBookings" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
