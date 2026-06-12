@@ -120,10 +120,12 @@ namespace CarLeasingSystem.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Make,Model,LicensePlate,DailyRate,IsAvailable")] Car car)
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> Edit(int id, Car car, IFormFile? imageFile) 
         {
+            ModelState.Remove("ImageUrl"); 
             if (id != car.Id)
-            {
+            { 
                 return NotFound();
             }
 
@@ -131,13 +133,52 @@ namespace CarLeasingSystem.Controllers
             {
                 try
                 {
-                    _context.Update(car);
+                    // 1. Fetch the existing record to get current ImageUrl
+                    var carToUpdate = await _context.Cars.FindAsync(id);
+                    if (carToUpdate == null) return NotFound();
+
+                    // 2. Update properties manually 
+                    carToUpdate.Make = car.Make;
+                    carToUpdate.Model = car.Model;
+                    carToUpdate.LicensePlate = car.LicensePlate;
+                    carToUpdate.DailyRate = car.DailyRate;
+                    carToUpdate.IsAvailable = car.IsAvailable;
+
+                    // 3. Handle Image Upload
+                    if (imageFile != null && imageFile.Length > 0)
+                    {
+                        // Delete old image if it exists
+                        if (!string.IsNullOrEmpty(carToUpdate.ImageUrl))
+                        {
+                            var oldImagePath = Path.Combine(_webHostEnvironment.WebRootPath, carToUpdate.ImageUrl.TrimStart('/'));
+                            if (System.IO.File.Exists(oldImagePath)) System.IO.File.Delete(oldImagePath);
+                        }
+
+                        // Save new image
+                        string fileName = Guid.NewGuid().ToString() + Path.GetExtension(imageFile.FileName);
+                        string uploadFolder = Path.Combine(_webHostEnvironment.WebRootPath, "images/cars");
+
+                        // Ensure directory exists
+                        if (!Directory.Exists(uploadFolder)) Directory.CreateDirectory(uploadFolder);
+
+                        string filePath = Path.Combine(uploadFolder, fileName);
+
+                        using (var fileStream = new FileStream(filePath, FileMode.Create))
+                        {
+                            await imageFile.CopyToAsync(fileStream);
+                        }
+
+                        // Update the model with the new path
+                        carToUpdate.ImageUrl = "/images/cars/" + fileName;
+                    }
+
+                    // 4. Save changes
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
                     if (!CarExists(car.Id))
-                    {
+                    { 
                         return NotFound();
                     }
                     else
@@ -147,7 +188,7 @@ namespace CarLeasingSystem.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(car);
+            return View(car); 
         }
 
         // GET: Cars/Delete/5 - Admin Only

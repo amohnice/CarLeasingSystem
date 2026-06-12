@@ -4,52 +4,43 @@
     ViewData["Title"] = "Details";
 }
 
-<h1>Details</h1>
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-6 mb-4">
+            <img src="@(string.IsNullOrEmpty(Model.ImageUrl) ? "/images/cars/default-car.png" : Model.ImageUrl)" 
+                 class="img-fluid rounded shadow-sm" 
+                 alt="@Model.Make @Model.Model">
+        </div>
 
-<div>
-    <h4>Car</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Make)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Make)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Model)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Model)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.LicensePlate)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.LicensePlate)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.DailyRate)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.DailyRate)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.IsAvailable)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.IsAvailable)
-        </dd>
-    </dl>
-</div>
+        <div class="col-md-6">
+            <h1 class="display-5 fw-bold">@Model.Make @Model.Model</h1>
+            <p class="text-muted fs-4">Plate: @Model.LicensePlate</p>
+            
+            <div class="my-4">
+                <span class="badge @(Model.IsAvailable ? "bg-success" : "bg-danger") fs-6 p-2">
+                    @(Model.IsAvailable ? "Available Now" : "Currently Unavailable")
+                </span>
+            </div>
 
-<div>
-    @* Only admins see the Edit button *@
-    @if (User.IsInRole("Admin"))
-    {
-        <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> <span>|</span>
-    }
-    
-    @* Everyone sees the Back to List button *@
-    <a asp-action="Index">Back to List</a>
+            <h2 class="text-primary fw-bold mb-4">KSh @Model.DailyRate.ToString("N0") <small class="text-muted fs-5">/ per day</small></h2>
+
+            <div class="d-grid gap-2 d-md-block">
+                @if (Model.IsAvailable)
+                {
+                    <a asp-controller="Bookings" asp-action="Create" asp-route-carId="@Model.Id" 
+                       class="btn btn-primary btn-lg px-5">Book Now</a>
+                }
+                
+                <a asp-action="Index" class="btn btn-outline-secondary btn-lg px-5">Back to Fleet</a>
+            </div>
+
+            @if (User.IsInRole("Admin"))
+            {
+                <div class="mt-5 border-top pt-3">
+                    <h5 class="text-secondary">Admin Actions</h5>
+                    <a asp-action="Edit" asp-route-id="@Model?.Id" class="btn btn-warning btn-sm">Edit Car</a>
+                </div>
+            }
+        </div>
+    </div>
 </div>
