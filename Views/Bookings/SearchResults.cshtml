@@ -8,24 +8,12 @@
 }
 else
 {
-    <table class="table">
-        <thead><tr><th>Make</th><th>Model</th><th>Rate</th><th>Action</th></tr></thead>
-        <tbody>
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
         @foreach (var car in Model)
         {
-            <tr>
-                <td>@car.Make</td>
-                <td>@car.Model</td>
-                <td>@car.DailyRate</td>
-                <td>
-                    <a asp-controller="Bookings" asp-action="Create" 
-                       asp-route-carId="@car.Id" 
-                       asp-route-start="@ViewBag.StartDate" 
-                       asp-route-end="@ViewBag.EndDate" 
-                       class="btn btn-success">Book Now</a>
-                </td>
-            </tr>
+            <div class="col">
+                <partial name="_CarCard" model="car" view-data="ViewData" />
+            </div>
         }
-        </tbody>
-    </table>
+    </div>
 }

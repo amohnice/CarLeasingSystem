@@ -28,6 +28,7 @@ namespace CarLeasingSystem.Controllers
         {
             // Logic: Find cars that have NO booking overlapping with the selected dates
             var availableCars = await _context.Cars
+                .Where(c => c.IsAvailable)
                 .Where(c => !_context.Bookings.Any(b => 
                     b.CarId == c.Id && 
                     b.StartDate < endDate && 
